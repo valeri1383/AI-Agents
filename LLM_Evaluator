@@ -1,0 +1,139 @@
+import os
+import json
+from dotenv import load_dotenv
+from openai import OpenAI
+from IPython.display import Markdown, display
+
+load_dotenv(override=True)
+
+# API Key setup
+openai_api_key = '?????'
+mistral_api_key = '?????'
+
+competitors = []
+answers = []
+
+if openai_api_key:
+    print(f"OpenAI API Key exists and begins {openai_api_key[:8]}")
+else:
+    print("OpenAI API Key not set")
+
+if mistral_api_key:
+    print(f"Mistal API Key exists and begins {mistral_api_key[:7]}")
+else:
+    print("Mistral API Key not set")
+
+
+request = "Please come up with a challenging, nuanced question that I can ask a number of LLMs to evaluate their intelligence. "
+request += "Answer only with the question, no explanation."
+messages = [{"role": "user", "content": request}]
+
+
+# Generating the Question
+openai = OpenAI(api_key=openai_api_key)
+response = openai.chat.completions.create(
+    model="gpt-4o-mini",
+    messages=messages,
+)
+question = response.choices[0].message.content
+print(question)
+
+
+messages = [{"role": "user", "content": question}]
+
+# OPEN API
+model_name = "gpt-4o-mini"
+
+response = openai.chat.completions.create(model=model_name, messages=messages)
+answer = response.choices[0].message.content
+
+#print(answer)
+competitors.append(model_name)
+answers.append(answer)
+
+# print(competitors)
+# print(answers)
+
+
+# Mistral API
+client = OpenAI(
+    api_key=mistral_api_key,
+    base_url="https://api.mistral.ai/v1"
+)
+
+question = response.choices[0].message.content
+
+model_name="mistral-tiny"
+
+response = client.chat.completions.create(
+    model=model_name,
+    messages=[
+        {"role": "user", "content": question}
+    ],
+    max_tokens=500,
+    temperature=0.7
+)
+
+answer = response.choices[0].message.content
+
+competitors.append(model_name)
+answers.append(answer)
+
+
+# oLLama API
+ollama = OpenAI(base_url='http://localhost:11434/v1', api_key='ollama')
+model_name = "llama3.2"
+
+response = ollama.chat.completions.create(model=model_name, messages=messages)
+answer = response.choices[0].message.content
+
+competitors.append(model_name)
+answers.append(answer)
+
+print(competitors)
+
+
+together = ""
+for index, answer in enumerate(answers):
+    together += f"# Response from competitor {index+1}\n\n"
+    together += answer + "\n\n"
+
+print(together)
+
+# Judge
+judge = f"""You are judging a competition between {len(competitors)} competitors.
+Each model has been given this question:
+
+{question}
+
+Your job is to evaluate each response for clarity and strength of argument, and rank them in order of best to worst.
+Respond with JSON, and only JSON, with the following format:
+{{"results": ["best competitor number", "second best competitor number", "third best competitor number", ...]}}
+
+Here are the responses from each competitor:
+
+{together}
+
+Now respond with the JSON with the ranked order of the competitors, nothing else. Do not include markdown formatting or code blocks."""
+
+print(judge)
+
+judge_messages = [{"role": "user", "content": judge}]
+
+# Judgement time!
+
+openai = OpenAI(api_key=openai_api_key)
+response = openai.chat.completions.create(
+    model="o3-mini",
+    messages=judge_messages,
+)
+results = response.choices[0].message.content
+print(results)
+
+
+
+results_dict = json.loads(results)
+ranks = results_dict["results"]
+for index, result in enumerate(ranks):
+    competitor = competitors[int(result)-1]
+    print(f"Rank {index+1}: {competitor}")
