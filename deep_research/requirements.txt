@@ -1,0 +1,6 @@
+gradio
+python-dotenv
+openai
+sendgrid
+agents
+ruamel.yaml
