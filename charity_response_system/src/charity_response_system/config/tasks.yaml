@@ -1,0 +1,126 @@
+event_watching:
+  description: >
+    Continuously scan Google News, official NGO websites, and verified social media channels
+    for reports of new humanitarian crises, natural disasters, or urgent aid needs.
+    Gather only verified and credible sources with accurate timestamps.
+  expected_output: >
+    A detailed markdown report of detected events formatted as a professional humanitarian crisis report.
+    Include:
+    1. Executive Summary with total number of crises found
+    2. A markdown table with columns: Crisis Name | Location | Date | Urgency Level | Summary
+    3. Detailed descriptions for each crisis
+    4. Source verification section with all links
+    
+    Format the output as a comprehensive markdown report that is easy to read and understand.
+    Use proper markdown headers, tables, and formatting for professional presentation.
+  agent: event_watcher_agent
+  output_file: output/events.md
+
+impact_assessment:
+  description: >
+    Review the event report and evaluate its severity, scale, and urgency.
+    Identify the type of aid required and score the crisis on a scale of 1–10.
+    Justify the urgency score using available data such as affected population and resource needs.
+  expected_output: >
+    A comprehensive urgency assessment report in markdown format containing:
+    1. Executive Summary with overall risk assessment
+    2. Crisis Assessment Table with columns: Event | Location | Urgency Score (1-10) | Aid Type | Affected Population | Justification
+    3. Priority Ranking section listing crises from highest to lowest urgency
+    4. Resource Requirements section detailing immediate needs
+    5. Recommendations for response prioritization
+    
+    Present the information in a clear, structured markdown format with proper tables and sections.
+  agent: impact_assessment_agent
+  context:
+    - event_watching
+  output_file: output/assessment_report.md
+
+charity_finding:
+  description: >
+    Search trusted NGO directories, charity watchdog sites, and credible news sources
+    to find at least three charities actively responding to the crisis.
+    Prioritize organizations with proven track records, transparency, and local presence.
+  expected_output: >
+    A professional charity recommendations report in markdown format including:
+    1. Executive Summary with total charities found and evaluation criteria
+    2. Recommended Charities Table with columns: Organization Name | Focus Area | Region | Contact Info | Specialization | Website
+    3. Detailed profiles for each charity including:
+       - Mission and background
+       - Current crisis response activities
+       - Track record and experience
+       - Local partnerships and presence
+    4. Alternative organizations section for backup options
+    
+    Format as a comprehensive markdown report suitable for decision-making.
+  agent: charity_finder_agent
+  output_file: output/charities.md
+
+charity_vetting:
+  description: >
+    Verify the legitimacy, efficiency, and transparency of each recommended charity.
+    Check for official registration, efficiency ratings, operational history, and public accountability.
+    Flag and remove any organizations that fail the checks.
+  expected_output: >
+    A detailed charity verification report in markdown format containing:
+    1. Executive Summary with total vetted vs rejected charities
+    2. Verified Charities Table with columns: Organization | Trust Score (%) | Efficiency Rating | Registration Status | Financial Transparency | Verification Notes
+    3. Detailed verification results for each charity including:
+       - Official registration verification
+       - Financial efficiency analysis
+       - Transparency assessment
+       - Operational capacity evaluation
+    4. Rejected Charities section with reasons for exclusion
+    5. Final recommendations ranked by trustworthiness and effectiveness
+    
+    Present in clear markdown format with professional tables and detailed analysis.
+  agent: charity_vetting_agent
+  context:
+    - charity_finding
+  output_file: output/selected_charities.md
+
+action_planning:
+  description: >
+    Using the urgency score and vetted charity list, design the most effective action plan.
+    This may include direct donations, launching awareness campaigns, organizing volunteers, or creating fundraising pages.
+    Include timelines, cost estimates, and projected impact.
+  expected_output: >
+    A comprehensive crisis response action plan in markdown format including:
+    1. Executive Summary with recommended primary actions and expected outcomes
+    2. Action Plan Overview Table with columns: Action Type | Target Crisis | Responsible Charity | Timeline | Budget | Expected Impact
+    3. Detailed action plans for each crisis including:
+       - Immediate response actions (0-48 hours)
+       - Short-term actions (1-4 weeks)
+       - Long-term support (1-6 months)
+    4. Budget breakdown and resource allocation
+    5. Success metrics and monitoring plan
+    6. Risk assessment and contingency plans
+    
+    Format as a professional markdown report suitable for implementation and approval.
+  agent: action_planner_agent
+  context:
+    - charity_vetting
+    - impact_assessment
+  output_file: output/action_plan.md
+
+decision_and_execution:
+  description: >
+    Review all collected intelligence and the proposed action plan.
+    Approve, modify, or reject the plan based on its feasibility and impact.
+    Once approved, execute the necessary steps such as triggering donations, launching campaigns, or coordinating resources.
+  expected_output: >
+    A final executive decision report in markdown format containing:
+    1. Executive Decision Summary with approval status and key decisions made
+    2. Decision Matrix Table with columns: Proposed Action | Decision (Approved/Modified/Rejected) | Rationale | Modified Details | Execution Status
+    3. Approved actions section with:
+       - Implementation timeline
+       - Resource allocation confirmation
+       - Success criteria and monitoring plan
+    4. Execution log with timestamps and completed actions
+    5. Next steps and follow-up requirements
+    6. Performance metrics and expected reporting schedule
+    
+    Present as a professional executive summary suitable for stakeholders and implementation teams.
+  agent: manager_agent
+  context:
+    - action_planning
+  output_file: output/decision_report.md
