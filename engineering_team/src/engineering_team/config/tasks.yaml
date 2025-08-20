@@ -1,0 +1,157 @@
+design_task:
+  description: >
+    Take the high level requirements described here and prepare a detailed design for the engineer;
+    everything should be in 1 python module, but outline the classes and methods in the module.
+    Ensure the design includes ALL necessary imports and dependencies that will be needed.
+    Here are the requirements: {requirements}
+    IMPORTANT: Only output the design in markdown format, laying out in detail the classes and functions in the module, describing the functionality.
+  expected_output: >
+    A detailed design for the engineer, identifying the classes and functions in the module, including all necessary imports and dependencies.
+  agent: engineering_lead
+  output_file: output/{module_name}_design.md
+
+code_task:
+  description: >
+    Write a python module that implements the design described by the engineering lead, in order to achieve the requirements.
+    The code must be COMPLETE, FUNCTIONAL, and include ALL necessary imports at the top of the file.
+    
+    CRITICAL INTEGRATION REQUIREMENTS:
+    - Create ONLY ONE main class called {class_name}
+    - Do NOT create separate Patient, Doctor, Appointment, or other classes
+    - All functionality must be methods within the single {class_name} class
+    - Use simple dictionaries and lists for data storage
+    - Include comprehensive error handling and input validation
+    - Test your code using the code interpreter to ensure it runs without errors before submitting
+    - Ensure all methods return clear string messages for success/failure
+    - CRITICAL: Do NOT include any test code, example usage, or code that runs on import
+    - The module should define the class and methods only - no execution code
+    - Use consistent datetime format: "YYYY-MM-DD HH:MM AM/PM"
+    - Include proper error handling for all string operations (split, format, etc.)
+    
+    Here are the requirements: {requirements}
+  expected_output: >
+    A complete, functional python module with a single {class_name} class that contains all functionality.
+    The code must include ALL necessary imports, be fully functional, and ready to run immediately.
+    The module must be safely importable without executing any code.
+    CRITICAL: Your response must start with "import" or "from" - NO markdown, NO code blocks, NO backticks, NO explanations.
+    Start immediately with Python code. Create only ONE main class with all methods inside it.
+    Do NOT include any test code or example usage that runs on import.
+    Output ONLY the class definition and methods - no execution code.
+  agent: backend_engineer
+  context:
+    - design_task
+  output_file: output/{module_name}
+
+frontend_task:
+  description: >
+    Write a complete, functional gradio UI in a module app.py that demonstrates the given backend class in {module_name}.
+    The UI must include ALL necessary imports, proper error handling, and be ready to run immediately.
+    
+    MANDATORY FEATURES TO INCLUDE:
+    - Patient Registration tab
+    - Patient Login tab  
+    - Book Appointment tab
+    - View Appointments tab
+    - Cancel Appointment tab
+    - Analytics Dashboard tab with charts and visualizations
+    - Admin Statistics tab with system metrics
+    
+    CRITICAL INTEGRATION REQUIREMENTS:
+    - Import ONLY: from {module_name} import {class_name}
+    - Do NOT reference any classes other than {class_name}
+    - Create wrapper functions that handle all interactions with the backend
+    - Include try/except blocks around ALL backend method calls
+    - Test each function to ensure it works with the backend before submitting
+    
+    VISUALIZATION REQUIREMENTS:
+    - Create an "Analytics Dashboard" tab that shows:
+      * Total system statistics (patients, appointments, etc.)
+      * Appointment trends over time
+      * Doctor utilization charts
+      * Patient booking patterns
+      * Appointment status distribution
+    - Use gr.Plot() to display Plotly charts
+    - Use gr.HTML() for complex visualizations
+    - Include data export functionality
+    - Show real-time metrics and statistics
+    
+    COMPONENT RESTRICTIONS - ONLY use these:
+    - gr.Textbox() for ALL inputs and text display
+    - gr.Button() for buttons
+    - gr.Radio() for selections
+    - gr.Dropdown() for dropdowns
+    - gr.Markdown() for text output display
+    - gr.HTML() for charts and rich content
+    - gr.Plot() for displaying plots
+    - gr.Blocks(), gr.Tab(), gr.Row(), gr.Column() for layout
+    
+    Here are the requirements: {requirements}
+  expected_output: >
+    A complete, functional gradio UI with integrated analytics dashboard that includes charts and visualizations.
+    Must have dedicated tabs for patient functions AND admin analytics with real-time charts.
+    Must include comprehensive error handling and only use approved Gradio components.
+    CRITICAL: Your response must start with "import" - NO markdown, NO code blocks, NO backticks.
+    Include proper error handling for all backend interactions and visualization display.
+    Output ONLY executable Python code that can be saved directly to a .py file.
+  agent: frontend_engineer
+  context:
+    - code_task
+  output_file: output/app.py
+
+test_task:
+  description: >
+    Write comprehensive unit tests for the given backend module {module_name} and create a test_{module_name} file.
+    Include ALL necessary imports, comprehensive test coverage for all methods, and ensure tests run immediately.
+    Test your test code using the code interpreter to verify it works before submitting.
+    Include both positive and negative test cases with proper assertions.
+  expected_output: >
+    A comprehensive test_{module_name} module that tests the given backend module.
+    The tests must include ALL necessary imports, cover all functionality, and run immediately without setup.
+    Include clear test method names and comprehensive coverage of edge cases.
+    CRITICAL: Your response must start with "import" or "from" - NO markdown, NO code blocks, NO backticks, NO explanations.
+    Start immediately with Python code. Do not write ```python or ``` anywhere in your response.
+    Output ONLY executable Python code that can be saved directly to a .py file.
+  agent: test_engineer
+  context:
+    - code_task
+  output_file: output/test_{module_name}
+
+create_analytics_dashboard:
+  description: >
+    Implement comprehensive data analytics and reporting functionality for the appointment system.
+    Create methods for generating reports, visualizations, and insights including: appointment trends,
+    patient demographics, doctor utilization, peak booking times, cancellation patterns, and analytics.
+    The code must be COMPLETE, include ALL necessary imports, and be ready to integrate with the main system.
+    Test your code using the code interpreter to ensure it works before submitting.
+  expected_output: >
+    Complete analytics module with methods for: generate_appointment_reports(), create_patient_demographics(),
+    analyze_doctor_utilization(), track_appointment_trends(), create_revenue_reports(), 
+    generate_operational_metrics(), and export_data_to_csv(). Include interactive dashboards 
+    using plotly or streamlit for real-time data visualization.
+    The code must include ALL necessary imports and be ready to run immediately.
+    CRITICAL: Your response must start with "import" or "from" - NO markdown, NO code blocks, NO backticks, NO explanations.
+    Start immediately with Python code. Do not write ```python or ``` anywhere in your response.
+    Output ONLY executable Python code that can be saved directly to a .py file.
+  agent: data_analyst
+  context:
+    - code_task
+  output_file: output/analytics_module.py
+
+create_visualization_system:
+  description: >
+    Implement comprehensive data visualization and analytics functionality for the appointment system.
+    Create interactive charts for appointment trends, doctor utilization, patient patterns, and system metrics.
+    The code must be COMPLETE, include ALL necessary imports, and integrate seamlessly with the main application.
+    Test your code using the code interpreter to ensure it works before submitting.
+  expected_output: >
+    Complete visualization module with methods for: create_appointment_charts(), generate_doctor_utilization_graphs(),
+    plot_booking_patterns(), create_patient_demographics(), generate_daily_reports(), create_interactive_dashboard().
+    Include plotly-based charts that provide real-time data insights and can be integrated with the main application.
+    The code must include ALL necessary imports and be ready to run immediately.
+    CRITICAL: Your response must start with "import" or "from" - NO markdown, NO code blocks, NO backticks, NO explanations.
+    Start immediately with Python code. Do not write ```python or ``` anywhere in your response.
+    Output ONLY executable Python code that can be saved directly to a .py file.
+  agent: visualization_specialist
+  context:
+    - code_task
+  output_file: output/visualization_module.py
